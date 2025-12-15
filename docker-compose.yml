@@ -1,0 +1,14 @@
+services:
+  webshot:
+    image: psdani9xo/webshot-mailer:latest
+    container_name: webshot-mailer
+    ports:
+      - "1234:1234"
+    environment:
+      - TZ=${TZ}
+      - APP_SECRET=${APP_SECRET}
+      - SMTP_PASS_GMAIL=${SMTP_PASS_GMAIL}
+    volumes:
+      - ./data:/app/data
+      - ./captures:/app/captures
+    restart: unless-stopped

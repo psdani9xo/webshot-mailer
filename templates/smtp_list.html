@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">Perfiles SMTP</h3>
+  <a class="btn btn-primary" href="/smtp/new">Nuevo perfil</a>
+</div>
+
+<table class="table table-striped bg-white">
+  <thead>
+    <tr>
+      <th>Nombre</th><th>Host</th><th>Port</th><th>Enc</th><th>User</th><th>From</th><th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for p in profiles %}
+    <tr>
+      <td>{{p.name}}</td>
+      <td>{{p.host}}</td>
+      <td>{{p.port}}</td>
+      <td>{{p.encryption}}</td>
+      <td>{{p.username}}</td>
+      <td>{{p.from_email}}</td>
+      <td class="d-flex gap-2">
+        <a class="btn btn-sm btn-outline-primary" href="/smtp/{{p.id}}/edit">Editar</a>
+        <form method="post" action="/smtp/{{p.id}}/test">
+          <button class="btn btn-sm btn-outline-success" type="submit">Probar SMTP</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

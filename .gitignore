@@ -1,0 +1,12 @@
+# Datos generados
+data/
+captures/
+*.db
+
+# Python
+__pycache__/
+*.pyc
+
+# Docker / env
+.env
+

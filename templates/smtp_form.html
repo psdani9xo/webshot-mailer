@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>{{ "Nuevo SMTP" if not p else "Editar SMTP" }}</h3>
+
+<form method="post">
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label">Nombre</label>
+      <input class="form-control" name="name" value="{{p.name if p else ''}}" required>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Host</label>
+      <input class="form-control" name="host" value="{{p.host if p else 'smtp.gmail.com'}}" required>
+    </div>
+
+    <div class="col-md-2">
+      <label class="form-label">Port</label>
+      <input class="form-control" name="port" value="{{p.port if p else 587}}" required>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Encryption</label>
+      <select class="form-select" name="encryption">
+        {% set v = (p.encryption if p else 'STARTTLS') %}
+        <option value="STARTTLS" {% if v=='STARTTLS' %}selected{% endif %}>STARTTLS</option>
+        <option value="SSL" {% if v=='SSL' %}selected{% endif %}>SSL</option>
+        <option value="NONE" {% if v=='NONE' %}selected{% endif %}>NONE</option>
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Username</label>
+      <input class="form-control" name="username" value="{{p.username if p else ''}}" required>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Password env (nombre variable)</label>
+      <input class="form-control" name="password_env" value="{{p.password_env if p else 'SMTP_PASS_GMAIL'}}" required>
+      <div class="form-text">Ej: SMTP_PASS_GMAIL (definida en docker-compose)</div>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">From email</label>
+      <input class="form-control" name="from_email" value="{{p.from_email if p else ''}}" required>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Reply-To (opcional)</label>
+      <input class="form-control" name="reply_to" value="{{p.reply_to if p else ''}}">
+    </div>
+  </div>
+
+  <div class="mt-3 d-flex gap-2">
+    <button class="btn btn-primary" type="submit">Guardar</button>
+    <a class="btn btn-secondary" href="/smtp">Volver</a>
+  </div>
+</form>
+{% endblock %}

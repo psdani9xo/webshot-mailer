@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Historial</h3>
+
+<form class="row g-2 mb-3">
+  <div class="col-auto">
+    <select name="task_id" class="form-select">
+      <option value="">Todas</option>
+      {% for t in tasks %}
+        <option value="{{t.id}}" {% if task_id==t.id %}selected{% endif %}>{{t.name}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-auto">
+    <button class="btn btn-primary" type="submit">Filtrar</button>
+  </div>
+</form>
+
+<table class="table table-striped bg-white">
+  <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>Tarea</th>
+      <th>Trigger</th>
+      <th>Status</th>
+      <th>Duracion</th>
+      <th>Captura</th>
+      <th>Error</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for r in runs %}
+    <tr>
+      <td>{{r.started_at}}</td>
+      <td>{{r.task.name}}</td>
+      <td>{{r.trigger}}</td>
+      <td>
+        {% if r.status=="OK" %}<span class="badge bg-success">OK</span>{% else %}<span class="badge bg-danger">ERROR</span>{% endif %}
+      </td>
+      <td>{{r.duration_ms}} ms</td>
+      <td>
+        {% if r.screenshot_path %}
+          {% set fname = r.screenshot_path.split('/')[-1] %}
+          <a href="/captures/{{fname}}" target="_blank">ver</a>
+        {% else %}-{% endif %}
+      </td>
+      <td style="max-width:400px;">{{r.error_message}}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
