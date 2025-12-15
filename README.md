@@ -5,22 +5,148 @@
 <h1 align="center">WebShot Mailer</h1>
 
 <p align="center">
-  Captura paginas web y las envia por correo de forma automatica usando Docker
+  Captura paginas web automaticamente y las envia por correo usando Docker
+</p>
+
+<p align="center">
+  <b>Simple · Autonomo · Ideal para servidores en casa</b>
 </p>
 
 ---
 
-## Caracteristicas
-- Capturas web con Selenium
-- Programaciones diarias / semanales / intervalos
-- Envio por SMTP (Gmail, etc)
-- Eliminacion de popups por selector
-- Entorno web simple
-- Docker ready
+## Que es WebShot Mailer
+
+**WebShot Mailer** es una aplicacion web autoalojada que permite:
+
+- Capturar paginas web con Selenium
+- Programar envios diarios, semanales o por intervalo
+- Enviar las capturas por correo (Gmail u otros SMTP)
+- Eliminar popups (cookies, Telegram, banners, etc.)
+- Gestionar todo desde una interfaz web sencilla
+
+Pensado para:
+- dashboards
+- webcams
+- paginas de estado
+- informes automaticos
+- uso personal en LAN
 
 ---
 
-## Uso rapido
+## Caracteristicas principales
 
-```bash
+- 🌐 Captura paginas web en segundo plano (headless Chromium)
+- ⏰ Programaciones flexibles (diario, semanal, intervalos)
+- 📧 Envio por SMTP (Gmail, servidores propios)
+- 🧹 Eliminacion de popups por selectores CSS
+- 🖼️ Imagen incrustada en el correo (CID)
+- 🧪 Boton de prueba y captura manual
+- 🗂️ Historial de ejecuciones
+- ♻️ Limpieza automatica de capturas antiguas
+- 🐳 100% Docker
+
+---
+
+## Interfaz web
+
+La aplicacion incluye una interfaz web para:
+
+- Crear y editar tareas
+- Configurar SMTP
+- Probar envios
+- Ver historial y errores
+- Descargar capturas
+
+Por defecto:
+http://localhost:1234 
+
+
+---
+
+## Instalacion rapida (Docker)
+
+### 1️⃣ Crear archivo `.env`
+
+```env
+TZ=Europe/Madrid
+APP_SECRET=change-me
+SMTP_PASS_GMAIL=tu_app_password_de_16_caracteres
+
+2️⃣ docker-compose.yml
+services:
+  webshot:
+    image: psdani9xo/webshot-mailer:latest
+    container_name: webshot-mailer
+    ports:
+      - "1234:1234"
+    environment:
+      - TZ=${TZ}
+      - APP_SECRET=${APP_SECRET}
+      - SMTP_PASS_GMAIL=${SMTP_PASS_GMAIL}
+    volumes:
+      - ./data:/app/data
+      - ./captures:/app/captures
+    restart: unless-stopped
+
+3️⃣ Arrancar
 docker compose up -d
+
+
+Abre el navegador en:
+
+http://localhost:1234
+
+Configuracion SMTP (Gmail)
+
+En la interfaz web crea un perfil SMTP con:
+
+Campo	Valor
+Host	smtp.gmail.com
+Puerto	587
+Encryption	STARTTLS
+Username	tu_correo@gmail.com
+
+Password env	SMTP_PASS_GMAIL
+From email	tu_correo@gmail.com
+
+Pulsa Probar SMTP antes de crear tareas.
+
+Eliminar popups (ejemplo Telegram)
+
+En una tarea, en Remove selectors (JSON):
+
+["#WolfTelegram"]
+
+
+O varios:
+
+["#WolfTelegram", ".cookie", ".cookies-banner"]
+
+Seguridad
+
+Las contrasenas no se guardan en la base de datos
+
+Se leen desde variables de entorno
+
+Ideal para uso personal en LAN
+
+No expongas el puerto a internet sin proteccion adicional
+
+Estructura del proyecto
+webshot-mailer/
+├── app.py
+├── capture.py
+├── mailer.py
+├── scheduler.py
+├── models.py
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+├── templates/
+├── static/
+├── data/        (volumen)
+└── captures/    (volumen)
+
+
+
+
