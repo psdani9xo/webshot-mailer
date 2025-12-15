@@ -58,8 +58,10 @@ La aplicacion incluye una interfaz web para:
 - Descargar capturas
 
 Por defecto:
-http://localhost:1234 
 
+```
+http://localhost:1234
+```
 
 ---
 
@@ -71,8 +73,16 @@ http://localhost:1234
 TZ=Europe/Madrid
 APP_SECRET=change-me
 SMTP_PASS_GMAIL=tu_app_password_de_16_caracteres
+```
 
-2️⃣ docker-compose.yml
+**Nota:** Usa una **App Password** de Gmail.  
+No uses tu contrasena normal de Google.
+
+---
+
+### 2️⃣ docker-compose.yml
+
+```yaml
 services:
   webshot:
     image: psdani9xo/webshot-mailer:latest
@@ -87,52 +97,69 @@ services:
       - ./data:/app/data
       - ./captures:/app/captures
     restart: unless-stopped
+```
 
-3️⃣ Arrancar
+---
+
+### 3️⃣ Arrancar el servicio
+
+```bash
 docker compose up -d
-
+```
 
 Abre el navegador en:
 
+```
 http://localhost:1234
+```
 
-Configuracion SMTP (Gmail)
+---
+
+## Configuracion SMTP (Gmail)
 
 En la interfaz web crea un perfil SMTP con:
 
-Campo	Valor
-Host	smtp.gmail.com
-Puerto	587
-Encryption	STARTTLS
-Username	tu_correo@gmail.com
+| Campo | Valor |
+|-----|------|
+| Host | smtp.gmail.com |
+| Puerto | 587 |
+| Encryption | STARTTLS |
+| Username | tu_correo@gmail.com |
+| Password env | SMTP_PASS_GMAIL |
+| From email | tu_correo@gmail.com |
 
-Password env	SMTP_PASS_GMAIL
-From email	tu_correo@gmail.com
+Pulsa **Probar SMTP** antes de crear tareas.
 
-Pulsa Probar SMTP antes de crear tareas.
+---
 
-Eliminar popups (ejemplo Telegram)
+## Eliminar popups (ejemplo Telegram)
 
-En una tarea, en Remove selectors (JSON):
+En una tarea, en **Remove selectors (JSON)**:
 
+```json
 ["#WolfTelegram"]
-
+```
 
 O varios:
 
+```json
 ["#WolfTelegram", ".cookie", ".cookies-banner"]
+```
 
-Seguridad
+---
 
-Las contrasenas no se guardan en la base de datos
+## Seguridad
 
-Se leen desde variables de entorno
+- Las contrasenas **no se guardan en la base de datos**
+- Se leen desde **variables de entorno**
+- Pensado para uso personal en LAN
+- No expongas el puerto a internet sin proteccion adicional
 
-Ideal para uso personal en LAN
+---
 
-No expongas el puerto a internet sin proteccion adicional
+## Estructura del proyecto
 
-Estructura del proyecto
+```
 webshot-mailer/
 ├── app.py
 ├── capture.py
@@ -144,9 +171,18 @@ webshot-mailer/
 ├── requirements.txt
 ├── templates/
 ├── static/
-├── data/        (volumen)
-└── captures/    (volumen)
+├── data/        (volumen Docker)
+└── captures/    (volumen Docker)
+```
 
+---
 
+## Autor
 
+Creado por **psdani9xo**
 
+---
+
+## Licencia
+
+MIT
