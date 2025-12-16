@@ -52,4 +52,58 @@
     <a class="btn btn-secondary" href="/smtp">Volver</a>
   </div>
 </form>
+
+<details class="mt-3 border rounded p-2 bg-light">
+  <summary><strong>Ayuda: configuracion SMTP</strong></summary>
+  <div class="mt-2">
+    <ul>
+      <li>
+        <b>Nombre</b>:
+        Identificador interno para este servidor SMTP (ej: Gmail personal, Servidor trabajo).
+      </li>
+
+      <li>
+        <b>Host / Port / Encryption</b>:
+        Datos del servidor SMTP.
+        <ul>
+          <li>Opciones para usar con gmail: <code>smtp.gmail.com</code>, puerto <code>587</code>, <b>STARTTLS</b></li>
+          <li>SSL suele usar puerto <code>465</code></li>
+        </ul>
+      </li>
+
+      <li>
+        <b>Username</b>:
+        Usuario para autenticar en el servidor SMTP.
+        <br>
+        ejemplo@gmail.com.
+      </li>
+
+      <li>
+        <b>Password env</b>:
+        Nombre de la variable de entorno que contiene la contrasena SMTP.
+        <br>
+        <b>No pongas la contrasena aqui</b>.
+        <br>
+        Ejemplo: <code>SMTP_PASS_GMAIL</code>
+      </li>
+
+      <li>
+        <b>From email</b>:
+        Remitente del correo.
+        <br>
+        Debe coincidir con el <b>Username</b>.
+      </li>
+
+      <li>
+        <b>Reply-To</b> (opcional):
+        Direccion a la que se respondera el correo si el destinatario pulsa “Responder”.
+      </li>
+    </ul>
+
+    <div class="text-muted mt-2">
+      Consejo: usa siempre contrasenas de aplicacion y variables de entorno para mayor seguridad.
+    </div>
+  </div>
+</details>
+
 {% endblock %}
