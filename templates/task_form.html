@@ -118,6 +118,13 @@
           </div>
           <button type="button" class="btn btn-sm btn-outline-secondary mt-2" id="apply-popup-presets">Añadir seleccionados</button>
           <div class="form-text">Se agregan sin duplicados al JSON actual.</div>
+          <div class="mt-3">
+            <label class="form-label">Pegar HTML de un popup</label>
+            <textarea class="form-control" id="popup-snippet" rows="3" placeholder="&lt;div id=&quot;cookie-popup&quot; class=&quot;modal&quot;&gt;...&lt;/div&gt;"></textarea>
+            <div class="form-text">Detectamos el primer id o clase del elemento para crear un selector CSS automaticamente.</div>
+            <button type="button" class="btn btn-sm btn-outline-secondary mt-2" id="add-popup-snippet">Detectar y añadir</button>
+            <div class="form-text" id="popup-snippet-result"></div>
+          </div>
         </div>
       </div>
     </div>
