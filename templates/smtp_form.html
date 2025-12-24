@@ -53,6 +53,12 @@
   </div>
 </form>
 
+{% if p %}
+  <form class="mt-2" method="post" action="/smtp/{{p.id}}/delete" onsubmit="return confirm('¿Seguro que quieres eliminar el perfil SMTP?');">
+    <button class="btn btn-danger" type="submit">Eliminar</button>
+  </form>
+{% endif %}
+
 <details class="mt-3 border rounded p-2 bg-light">
   <summary><strong>Ayuda: configuracion SMTP</strong></summary>
   <div class="mt-2">

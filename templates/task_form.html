@@ -210,9 +210,14 @@
 
   </div>
 
-  <div class="mt-3 d-flex gap-2">
+  <div class="mt-3 d-flex gap-2 flex-wrap align-items-center">
     <button class="btn btn-primary" type="submit">Guardar</button>
     <a class="btn btn-secondary" href="/">Volver</a>
   </div>
 </form>
+{% if task %}
+  <form class="mt-2" method="post" action="{{ url_for('task_delete', task_id=task.id) }}" onsubmit="return confirm('¿Seguro que quieres eliminar la tarea?');">
+    <button class="btn btn-danger" type="submit">Eliminar</button>
+  </form>
+{% endif %}
 {% endblock %}

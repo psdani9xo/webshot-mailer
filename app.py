@@ -134,6 +134,24 @@ def create_app():
         flash("Tarea actualizada", "success")
         return redirect(url_for("index"))
 
+    @app.post("/tasks/<int:task_id>/delete")
+    def task_delete(task_id):
+        t = Task.query.get_or_404(task_id)
+        runs = Run.query.filter_by(task_id=t.id).all()
+        for r in runs:
+            if r.screenshot_path:
+                try:
+                    os.remove(r.screenshot_path)
+                except Exception:
+                    pass
+            db.session.delete(r)
+
+        db.session.delete(t)
+        db.session.commit()
+        reschedule_all()
+        flash("Tarea eliminada", "success")
+        return redirect(url_for("index"))
+
     @app.post("/tasks/<int:task_id>/toggle")
     def task_toggle(task_id):
         t = Task.query.get_or_404(task_id)
@@ -231,6 +249,19 @@ def create_app():
         except Exception as e:
             flash(f"SMTP ERROR: {e}", "danger")
 
+        return redirect(url_for("smtp_list"))
+
+    @app.post("/smtp/<int:pid>/delete")
+    def smtp_delete(pid):
+        p = SmtpProfile.query.get_or_404(pid)
+        in_use = Task.query.filter_by(smtp_profile_id=p.id).count()
+        if in_use:
+            flash("No se puede eliminar el perfil: esta en uso por tareas", "danger")
+            return redirect(url_for("smtp_list"))
+
+        db.session.delete(p)
+        db.session.commit()
+        flash("Perfil SMTP eliminado", "success")
         return redirect(url_for("smtp_list"))
 
     def _fill_smtp_from_form(p: SmtpProfile, f):
