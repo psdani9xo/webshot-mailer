@@ -174,7 +174,7 @@
     const snippetBtn = document.getElementById('add-popup-snippet');
     const snippetResult = document.getElementById('popup-snippet-result');
 
-    if (!input) return;
+    if (!input || (!applyBtn && !snippetBtn)) return;
 
     function parseCurrent() {
       try {
