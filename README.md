@@ -169,6 +169,8 @@ En el formulario de tareas hay plantillas seleccionables con los popups mas habi
 - Modales de newsletter/registro (oculta modal y backdrop de Bootstrap).
 - Gestores GDPR/CMP habituales (Didomi, Quantcast) combinando `hide` y `click`.
 
+Tambien puedes pegar el HTML del popup (el `<div>` o contenedor principal) en el formulario para que detecte automaticamente un selector util (`#id`, `.clase`, o `tag.clase`). El selector se añade sin duplicados a la lista JSON.
+
 ---
 
 ## Seguridad

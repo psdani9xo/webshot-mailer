@@ -170,8 +170,11 @@
     const input = document.querySelector('input[name="remove_selectors"]');
     const applyBtn = document.getElementById('apply-popup-presets');
     const checkboxes = Array.from(document.querySelectorAll('.preset-remove-selector'));
+    const snippetInput = document.getElementById('popup-snippet');
+    const snippetBtn = document.getElementById('add-popup-snippet');
+    const snippetResult = document.getElementById('popup-snippet-result');
 
-    if (!input || !applyBtn || !checkboxes.length) return;
+    if (!input || (!applyBtn && !snippetBtn)) return;
 
     function parseCurrent() {
       try {

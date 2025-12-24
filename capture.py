@@ -105,7 +105,7 @@ def capture_screenshot(task, chrome_bin: str, chromedriver_bin: str, captures_di
         filename = f"task{task.id}_{stamp}.png"
         path = os.path.join(captures_dir, filename)
 
-        # Screenshot (viewport). Full page v1: dejamos viewport grande (como tu script 1920x5000) :contentReference[oaicite:2]{index=2}
+        # Screenshot (viewport). Full page v1: dejamos viewport grande (como tu script 1920x5000)
         driver.save_screenshot(path)
         return path
     finally:
