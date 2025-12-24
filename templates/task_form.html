@@ -95,7 +95,38 @@
     <div class="col-md-6">
       <label class="form-label">Remove selectors (JSON)</label>
       <input class="form-control" name="remove_selectors" value="{{task.remove_selectors if task else '[]'}}">
-      <div class="form-text">Ej: ["#WolfTelegram",".cookie"]</div>
+      <div class="form-text">
+        Admite cadenas o objetos con accion <code>remove</code>, <code>hide</code> o <code>click</code>.
+        Ej: <code>["#WolfTelegram", {"selector":".cookie","action":"hide"}, {"selector":"button.close","action":"click"}]</code>
+        <div class="mt-2" id="popup-presets">
+          <div><strong>Plantillas rapidas de popups comunes:</strong></div>
+          <div class="form-check">
+            <input class="form-check-input preset-remove-selector" type="checkbox" id="preset-cookies" data-items='[{"selector":".cookie","action":"hide"},{"selector":".cookies","action":"hide"},{"selector":".cookie-banner","action":"hide"},{"selector":".cookies-banner","action":"hide"},{"selector":"#cookie-banner","action":"hide"},{"selector":"#cookie-consent","action":"hide"}]'>
+            <label class="form-check-label" for="preset-cookies">Cookies basicas (ocultar banners comunes)</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input preset-remove-selector" type="checkbox" id="preset-onetrust" data-items='[{"selector":"#onetrust-accept-btn-handler","action":"click"},{"selector":".ot-sdk-container","action":"hide"}]'>
+            <label class="form-check-label" for="preset-onetrust">Cookies OneTrust (click en aceptar)</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input preset-remove-selector" type="checkbox" id="preset-newsletter" data-items='[{"selector":".newsletter-modal","action":"hide"},{"selector":".modal-backdrop","action":"remove"},{"selector":".modal.show","action":"hide"}]'>
+            <label class="form-check-label" for="preset-newsletter">Modal de newsletter/registro</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input preset-remove-selector" type="checkbox" id="preset-gdpr" data-items='[{"selector":"#didomi-notice","action":"hide"},{"selector":"#didomi-notice-agree-button","action":"click"},{"selector":".qc-cmp2-container","action":"hide"},{"selector":".qc-cmp2-summary-buttons .css-47sehv","action":"click"}]'>
+            <label class="form-check-label" for="preset-gdpr">Consentimiento GDPR / CMP</label>
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-secondary mt-2" id="apply-popup-presets">Añadir seleccionados</button>
+          <div class="form-text">Se agregan sin duplicados al JSON actual.</div>
+          <div class="mt-3">
+            <label class="form-label">Pegar HTML de un popup</label>
+            <textarea class="form-control" id="popup-snippet" rows="3" placeholder="&lt;div id=&quot;cookie-popup&quot; class=&quot;modal&quot;&gt;...&lt;/div&gt;"></textarea>
+            <div class="form-text">Detectamos el primer id o clase del elemento para crear un selector CSS automaticamente.</div>
+            <button type="button" class="btn btn-sm btn-outline-secondary mt-2" id="add-popup-snippet">Detectar y añadir</button>
+            <div class="form-text" id="popup-snippet-result"></div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="col-md-6">
       <label class="form-label">pre_js (opcional)</label>
@@ -133,6 +164,133 @@
     </ul>
   </div>
 </details>
+
+<script>
+  (function() {
+    const input = document.querySelector('input[name="remove_selectors"]');
+    const applyBtn = document.getElementById('apply-popup-presets');
+    const checkboxes = Array.from(document.querySelectorAll('.preset-remove-selector'));
+    const snippetInput = document.getElementById('popup-snippet');
+    const snippetBtn = document.getElementById('add-popup-snippet');
+    const snippetResult = document.getElementById('popup-snippet-result');
+
+    if (!input || (!applyBtn && !snippetBtn)) return;
+
+    function parseCurrent() {
+      try {
+        const parsed = JSON.parse(input.value || '[]');
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function normalize(item) {
+      if (typeof item === 'string') {
+        const sel = item.trim();
+        return sel ? { selector: sel, action: 'remove' } : null;
+      }
+      if (item && typeof item === 'object') {
+        const sel = String(item.selector || '').trim();
+        const action = String(item.action || 'remove').trim().toLowerCase() || 'remove';
+        return sel ? { selector: sel, action } : null;
+      }
+      return null;
+    }
+
+    function toKey(entry) {
+      if (typeof entry === 'string') {
+        return `${entry.trim()}::remove`;
+      }
+      if (entry && typeof entry === 'object') {
+        const sel = String(entry.selector || '').trim();
+        const action = String(entry.action || 'remove').trim().toLowerCase() || 'remove';
+        return `${sel}::${action}`;
+      }
+      return '';
+    }
+
+    function addEntries(entries) {
+      const current = parseCurrent();
+      const existing = new Set(current.map(toKey).filter(Boolean));
+      let added = 0;
+
+      entries.forEach(item => {
+        const normalized = normalize(item);
+        const key = normalized ? toKey(normalized) : '';
+        if (normalized && key && !existing.has(key)) {
+          current.push(normalized);
+          existing.add(key);
+          added++;
+        }
+      });
+
+      input.value = JSON.stringify(current);
+      return { added, total: current.length };
+    }
+
+    function extractSelectorFromSnippet(snippet) {
+      if (!snippet || !snippet.trim()) return null;
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(snippet, 'text/html');
+      const el = doc.body && doc.body.firstElementChild;
+      if (!el) return null;
+
+      if (el.id && el.id.trim()) {
+        return `#${el.id.trim()}`;
+      }
+
+      if (el.classList && el.classList.length) {
+        const classes = Array.from(el.classList).filter(Boolean);
+        if (classes.length) {
+          return `${el.tagName.toLowerCase()}.${classes.join('.')}`;
+        }
+      }
+
+      return el.tagName ? el.tagName.toLowerCase() : null;
+    }
+
+    if (applyBtn && checkboxes.length) {
+      applyBtn.addEventListener('click', () => {
+        const candidates = [];
+
+        checkboxes.filter(cb => cb.checked).forEach(cb => {
+          let items = [];
+          try {
+            items = JSON.parse(cb.dataset.items || '[]');
+          } catch (e) {
+            items = [];
+          }
+
+          items.forEach(item => candidates.push(item));
+        });
+
+        addEntries(candidates);
+      });
+    }
+
+    if (snippetBtn && snippetInput) {
+      snippetBtn.addEventListener('click', () => {
+        if (snippetResult) snippetResult.textContent = '';
+        const selector = extractSelectorFromSnippet(snippetInput.value);
+
+        if (!selector) {
+          if (snippetResult) {
+            snippetResult.textContent = 'No se encontro ningun id o clase en el HTML pegado.';
+          }
+          return;
+        }
+
+        const result = addEntries([{ selector, action: 'remove' }]);
+        if (snippetResult) {
+          snippetResult.textContent = result.added
+            ? `Añadido selector ${selector}`
+            : `El selector ${selector} ya estaba en la lista.`;
+        }
+      });
+    }
+  })();
+</script>
 
 
     <hr class="mt-4">
