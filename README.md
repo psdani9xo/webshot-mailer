@@ -146,6 +146,29 @@ O varios:
 ["#WolfTelegram", ".cookie", ".cookies-banner"]
 ```
 
+Tambien puedes combinar acciones especificas para popups que requieren hacer clic o solo ocultarlos:
+
+```json
+[
+  "#WolfTelegram",
+  {"selector": ".cookie", "action": "hide"},
+  {"selector": "button.close", "action": "click"}
+]
+```
+
+Acciones disponibles:
+
+- `remove` (por defecto): elimina los elementos encontrados.
+- `hide`: oculta y deshabilita interacciones (display/visibility/pointer-events).
+- `click`: ejecuta `click()` sobre los elementos que matcheen el selector.
+
+En el formulario de tareas hay plantillas seleccionables con los popups mas habituales para no tener que escribir JSON a mano. Incluyen:
+
+- Banners de cookies genericos (`.cookie`, `.cookies`, `.cookie-banner`, etc.) ocultados automaticamente.
+- Consentimiento con OneTrust (clic en `#onetrust-accept-btn-handler`).
+- Modales de newsletter/registro (oculta modal y backdrop de Bootstrap).
+- Gestores GDPR/CMP habituales (Didomi, Quantcast) combinando `hide` y `click`.
+
 ---
 
 ## Seguridad

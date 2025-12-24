@@ -95,7 +95,31 @@
     <div class="col-md-6">
       <label class="form-label">Remove selectors (JSON)</label>
       <input class="form-control" name="remove_selectors" value="{{task.remove_selectors if task else '[]'}}">
-      <div class="form-text">Ej: ["#WolfTelegram",".cookie"]</div>
+      <div class="form-text">
+        Admite cadenas o objetos con accion <code>remove</code>, <code>hide</code> o <code>click</code>.
+        Ej: <code>["#WolfTelegram", {"selector":".cookie","action":"hide"}, {"selector":"button.close","action":"click"}]</code>
+        <div class="mt-2" id="popup-presets">
+          <div><strong>Plantillas rapidas de popups comunes:</strong></div>
+          <div class="form-check">
+            <input class="form-check-input preset-remove-selector" type="checkbox" id="preset-cookies" data-items='[{"selector":".cookie","action":"hide"},{"selector":".cookies","action":"hide"},{"selector":".cookie-banner","action":"hide"},{"selector":".cookies-banner","action":"hide"},{"selector":"#cookie-banner","action":"hide"},{"selector":"#cookie-consent","action":"hide"}]'>
+            <label class="form-check-label" for="preset-cookies">Cookies basicas (ocultar banners comunes)</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input preset-remove-selector" type="checkbox" id="preset-onetrust" data-items='[{"selector":"#onetrust-accept-btn-handler","action":"click"},{"selector":".ot-sdk-container","action":"hide"}]'>
+            <label class="form-check-label" for="preset-onetrust">Cookies OneTrust (click en aceptar)</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input preset-remove-selector" type="checkbox" id="preset-newsletter" data-items='[{"selector":".newsletter-modal","action":"hide"},{"selector":".modal-backdrop","action":"remove"},{"selector":".modal.show","action":"hide"}]'>
+            <label class="form-check-label" for="preset-newsletter">Modal de newsletter/registro</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input preset-remove-selector" type="checkbox" id="preset-gdpr" data-items='[{"selector":"#didomi-notice","action":"hide"},{"selector":"#didomi-notice-agree-button","action":"click"},{"selector":".qc-cmp2-container","action":"hide"},{"selector":".qc-cmp2-summary-buttons .css-47sehv","action":"click"}]'>
+            <label class="form-check-label" for="preset-gdpr">Consentimiento GDPR / CMP</label>
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-secondary mt-2" id="apply-popup-presets">Añadir seleccionados</button>
+          <div class="form-text">Se agregan sin duplicados al JSON actual.</div>
+        </div>
+      </div>
     </div>
     <div class="col-md-6">
       <label class="form-label">pre_js (opcional)</label>
@@ -133,6 +157,75 @@
     </ul>
   </div>
 </details>
+
+<script>
+  (function() {
+    const input = document.querySelector('input[name="remove_selectors"]');
+    const applyBtn = document.getElementById('apply-popup-presets');
+    const checkboxes = Array.from(document.querySelectorAll('.preset-remove-selector'));
+
+    if (!input || !applyBtn || !checkboxes.length) return;
+
+    function parseCurrent() {
+      try {
+        const parsed = JSON.parse(input.value || '[]');
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function normalize(item) {
+      if (typeof item === 'string') {
+        const sel = item.trim();
+        return sel ? { selector: sel, action: 'remove' } : null;
+      }
+      if (item && typeof item === 'object') {
+        const sel = String(item.selector || '').trim();
+        const action = String(item.action || 'remove').trim().toLowerCase() || 'remove';
+        return sel ? { selector: sel, action } : null;
+      }
+      return null;
+    }
+
+    function toKey(entry) {
+      if (typeof entry === 'string') {
+        return `${entry.trim()}::remove`;
+      }
+      if (entry && typeof entry === 'object') {
+        const sel = String(entry.selector || '').trim();
+        const action = String(entry.action || 'remove').trim().toLowerCase() || 'remove';
+        return `${sel}::${action}`;
+      }
+      return '';
+    }
+
+    applyBtn.addEventListener('click', () => {
+      const current = parseCurrent();
+      const existing = new Set(current.map(toKey).filter(Boolean));
+
+      checkboxes.filter(cb => cb.checked).forEach(cb => {
+        let items = [];
+        try {
+          items = JSON.parse(cb.dataset.items || '[]');
+        } catch (e) {
+          items = [];
+        }
+
+        items.forEach(item => {
+          const normalized = normalize(item);
+          const key = normalized ? toKey(normalized) : '';
+          if (normalized && key && !existing.has(key)) {
+            current.push(normalized);
+            existing.add(key);
+          }
+        });
+      });
+
+      input.value = JSON.stringify(current);
+    });
+  })();
+</script>
 
 
     <hr class="mt-4">
