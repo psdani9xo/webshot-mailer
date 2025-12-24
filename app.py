@@ -251,6 +251,19 @@ def create_app():
 
         return redirect(url_for("smtp_list"))
 
+    @app.post("/smtp/<int:pid>/delete")
+    def smtp_delete(pid):
+        p = SmtpProfile.query.get_or_404(pid)
+        in_use = Task.query.filter_by(smtp_profile_id=p.id).count()
+        if in_use:
+            flash("No se puede eliminar el perfil: esta en uso por tareas", "danger")
+            return redirect(url_for("smtp_list"))
+
+        db.session.delete(p)
+        db.session.commit()
+        flash("Perfil SMTP eliminado", "success")
+        return redirect(url_for("smtp_list"))
+
     def _fill_smtp_from_form(p: SmtpProfile, f):
         p.name = f.get("name", "").strip()
         p.host = f.get("host", "").strip()

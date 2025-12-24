@@ -220,4 +220,9 @@
     {% endif %}
   </div>
 </form>
+{% if task %}
+  <form class="mt-2" method="post" action="{{ url_for('task_delete', task_id=task.id) }}" onsubmit="return confirm('¿Seguro que quieres eliminar la tarea?');">
+    <button class="btn btn-danger" type="submit">Eliminar</button>
+  </form>
+{% endif %}
 {% endblock %}

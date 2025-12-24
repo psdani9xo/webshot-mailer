@@ -25,6 +25,9 @@
         <form method="post" action="/smtp/{{p.id}}/test">
           <button class="btn btn-sm btn-outline-success" type="submit">Probar SMTP</button>
         </form>
+        <form method="post" action="/smtp/{{p.id}}/delete" onsubmit="return confirm('¿Seguro que quieres eliminar el perfil SMTP?');">
+          <button class="btn btn-sm btn-outline-danger" type="submit">Eliminar</button>
+        </form>
       </td>
     </tr>
   {% endfor %}
