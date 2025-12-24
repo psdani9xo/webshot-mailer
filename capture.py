@@ -45,16 +45,58 @@ def capture_screenshot(task, chrome_bin: str, chromedriver_bin: str, captures_di
             time.sleep(max(0, int(task.wait_seconds)))
 
         # Remove selectors
-        selectors = []
+        raw_selectors = []
         try:
-            selectors = json.loads(task.remove_selectors or "[]")
+            raw_selectors = json.loads(task.remove_selectors or "[]")
         except Exception:
-            selectors = []
+            raw_selectors = []
 
-        for sel in selectors:
-            if not sel:
-                continue
-            driver.execute_script(f"document.querySelector('{sel}')?.remove();")
+        actions = []
+        for item in raw_selectors:
+            if isinstance(item, str):
+                sel = item.strip()
+                if sel:
+                    actions.append({"selector": sel, "action": "remove"})
+            elif isinstance(item, dict):
+                sel = str(item.get("selector", "")).strip()
+                action = str(item.get("action", "remove")).strip().lower() or "remove"
+                if sel:
+                    actions.append({"selector": sel, "action": action})
+
+        for entry in actions:
+            sel = entry["selector"]
+            action = entry["action"]
+            if action == "remove":
+                driver.execute_script(
+                    "document.querySelectorAll(arguments[0]).forEach(el => el.remove());",
+                    sel,
+                )
+            elif action == "hide":
+                driver.execute_script(
+                    (
+                        "document.querySelectorAll(arguments[0]).forEach(el => {"
+                        "el.style.setProperty('display','none','important');"
+                        "el.style.setProperty('visibility','hidden','important');"
+                        "el.style.setProperty('opacity','0','important');"
+                        "el.style.setProperty('pointer-events','none','important');"
+                        "});"
+                    ),
+                    sel,
+                )
+            elif action == "click":
+                driver.execute_script(
+                    (
+                        "document.querySelectorAll(arguments[0]).forEach(el => {"
+                        "try { el.click(); } catch(e) {}"
+                        "});"
+                    ),
+                    sel,
+                )
+            else:
+                driver.execute_script(
+                    "document.querySelectorAll(arguments[0]).forEach(el => el.remove());",
+                    sel,
+                )
 
         time.sleep(0.5)
 
