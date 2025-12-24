@@ -134,6 +134,24 @@ def create_app():
         flash("Tarea actualizada", "success")
         return redirect(url_for("index"))
 
+    @app.post("/tasks/<int:task_id>/delete")
+    def task_delete(task_id):
+        t = Task.query.get_or_404(task_id)
+        runs = Run.query.filter_by(task_id=t.id).all()
+        for r in runs:
+            if r.screenshot_path:
+                try:
+                    os.remove(r.screenshot_path)
+                except Exception:
+                    pass
+            db.session.delete(r)
+
+        db.session.delete(t)
+        db.session.commit()
+        reschedule_all()
+        flash("Tarea eliminada", "success")
+        return redirect(url_for("index"))
+
     @app.post("/tasks/<int:task_id>/toggle")
     def task_toggle(task_id):
         t = Task.query.get_or_404(task_id)
