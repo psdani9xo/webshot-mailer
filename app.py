@@ -2,12 +2,23 @@ import os
 import time
 from datetime import datetime, timedelta
 
-from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash,
+    send_from_directory,
+    session,
+    g,
+)
 from config import Config
 from models import db, Task, Run, SmtpProfile
 from scheduler import build_scheduler
 from capture import capture_screenshot
 from mailer import send_email_with_screenshot
+from translations import LANGUAGES, translate_text
 
 def create_app():
     app = Flask(__name__)
@@ -19,6 +30,27 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+
+    @app.before_request
+    def set_language():
+        lang = request.args.get("lang") or session.get("lang") or "es"
+        if lang not in LANGUAGES:
+            lang = "es"
+        g.lang = lang
+        session["lang"] = lang
+
+    @app.context_processor
+    def inject_translator():
+        lang = getattr(g, "lang", "es")
+
+        def _t(text: str):
+            return translate_text(text, lang)
+
+        return {
+            "_": _t,
+            "current_lang": lang,
+            "languages": LANGUAGES,
+        }
 
     def cleanup_old(task: Task):
         # Borra capturas viejas segun retention_days
@@ -80,6 +112,14 @@ def create_app():
         reschedule_all()
 
     # -------- ROUTES --------
+
+    @app.get("/lang/<lang_code>")
+    def set_language_route(lang_code):
+        if lang_code not in LANGUAGES:
+            lang_code = "es"
+        session["lang"] = lang_code
+        ref = request.headers.get("Referer")
+        return redirect(ref or url_for("index"))
 
     @app.get("/")
     def index():
@@ -146,7 +186,7 @@ def create_app():
         db.session.add(t)
         db.session.commit()
         reschedule_all()
-        flash("Tarea creada", "success")
+        flash(translate_text("Tarea creada", g.lang), "success")
         return redirect(url_for("index"))
 
     @app.get("/tasks/<int:task_id>/edit")
@@ -161,7 +201,7 @@ def create_app():
         _fill_task_from_form(t, request.form)
         db.session.commit()
         reschedule_all()
-        flash("Tarea actualizada", "success")
+        flash(translate_text("Tarea actualizada", g.lang), "success")
         return redirect(url_for("index"))
 
     @app.post("/tasks/<int:task_id>/delete")
@@ -179,7 +219,7 @@ def create_app():
         db.session.delete(t)
         db.session.commit()
         reschedule_all()
-        flash("Tarea eliminada", "success")
+        flash(translate_text("Tarea eliminada", g.lang), "success")
         return redirect(url_for("index"))
 
     @app.post("/tasks/<int:task_id>/toggle")
@@ -188,19 +228,32 @@ def create_app():
         t.enabled = not t.enabled
         db.session.commit()
         reschedule_all()
-        flash("Tarea activada" if t.enabled else "Tarea pausada", "success")
+        flash(
+            translate_text("Tarea activada", g.lang)
+            if t.enabled
+            else translate_text("Tarea pausada", g.lang),
+            "success",
+        )
         return redirect(url_for("index"))
 
     @app.post("/tasks/<int:task_id>/capture")
     def task_capture(task_id):
         run_task(task_id, "MANUAL_CAPTURE")
-        flash("Captura hecha (sin enviar correo). Mira el historial.", "success")
+        flash(
+            translate_text(
+                "Captura hecha (sin enviar correo). Mira el historial.", g.lang
+            ),
+            "success",
+        )
         return redirect(url_for("runs", task_id=task_id))
 
     @app.post("/tasks/<int:task_id>/run")
     def task_run(task_id):
         run_task(task_id, "MANUAL_TEST")
-        flash("Test completo ejecutado. Mira el historial.", "success")
+        flash(
+            translate_text("Test completo ejecutado. Mira el historial.", g.lang),
+            "success",
+        )
         return redirect(url_for("runs", task_id=task_id))
 
     @app.get("/smtp")
@@ -218,7 +271,7 @@ def create_app():
         _fill_smtp_from_form(p, request.form)
         db.session.add(p)
         db.session.commit()
-        flash("Perfil SMTP creado", "success")
+        flash(translate_text("Perfil SMTP creado", g.lang), "success")
         return redirect(url_for("smtp_list"))
 
     @app.get("/smtp/<int:pid>/edit")
@@ -231,7 +284,7 @@ def create_app():
         p = SmtpProfile.query.get_or_404(pid)
         _fill_smtp_from_form(p, request.form)
         db.session.commit()
-        flash("Perfil SMTP actualizado", "success")
+        flash(translate_text("Perfil SMTP actualizado", g.lang), "success")
         return redirect(url_for("smtp_list"))
 
     @app.post("/smtp/<int:pid>/test")
@@ -256,7 +309,10 @@ def create_app():
             from email.mime.text import MIMEText
             pwd = os.getenv(p.password_env, "")
             if not pwd:
-                raise RuntimeError(f"Variable {p.password_env} vacia")
+                msg = translate_text("Variable {var} vacia", g.lang).format(
+                    var=p.password_env
+                )
+                raise RuntimeError(msg)
 
             msg = MIMEText("SMTP OK", "plain", "utf-8")
             msg["From"] = p.from_email
@@ -275,9 +331,12 @@ def create_app():
             s.login(p.username, pwd)
             s.sendmail(p.from_email, [p.from_email], msg.as_string())
             s.quit()
-            flash("SMTP OK (correo enviado)", "success")
+            flash(translate_text("SMTP OK (correo enviado)", g.lang), "success")
         except Exception as e:
-            flash(f"SMTP ERROR: {e}", "danger")
+            flash(
+                translate_text("SMTP ERROR: {error}", g.lang).format(error=e),
+                "danger",
+            )
 
         return redirect(url_for("smtp_list"))
 
@@ -286,12 +345,17 @@ def create_app():
         p = SmtpProfile.query.get_or_404(pid)
         in_use = Task.query.filter_by(smtp_profile_id=p.id).count()
         if in_use:
-            flash("No se puede eliminar el perfil: esta en uso por tareas", "danger")
+            flash(
+                translate_text(
+                    "No se puede eliminar el perfil: esta en uso por tareas", g.lang
+                ),
+                "danger",
+            )
             return redirect(url_for("smtp_list"))
 
         db.session.delete(p)
         db.session.commit()
-        flash("Perfil SMTP eliminado", "success")
+        flash(translate_text("Perfil SMTP eliminado", g.lang), "success")
         return redirect(url_for("smtp_list"))
 
     def _fill_smtp_from_form(p: SmtpProfile, f):

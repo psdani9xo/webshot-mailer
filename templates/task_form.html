@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<h3>{{ "Nueva tarea" if not task else "Editar tarea" }}</h3>
+<h3>{{ _('Nueva tarea') if not task else _('Editar tarea') }}</h3>
 
 <form method="post">
   <div class="row g-3">
 
     <div class="col-md-6">
-      <label class="form-label">Nombre</label>
+      <label class="form-label">{{ _('Nombre') }}</label>
       <input class="form-control" name="name" value="{{task.name if task else ''}}" required>
     </div>
 
@@ -18,15 +18,15 @@
     <div class="col-md-3 d-flex align-items-end">
       <div class="form-check">
         <input class="form-check-input" type="checkbox" name="enabled" {% if not task or task.enabled %}checked{% endif %}>
-        <label class="form-check-label">Enabled</label>
+        <label class="form-check-label">{{ _('Enabled') }}</label>
       </div>
     </div>
 
     <hr class="mt-4">
 
-    <h5>Programacion</h5>
+    <h5>{{ _('Programacion') }}</h5>
     <div class="col-md-3">
-      <label class="form-label">Tipo</label>
+      <label class="form-label">{{ _('Tipo') }}</label>
       {% set st = (task.schedule_type if task else 'DAILY') %}
       <select class="form-select" name="schedule_type">
         <option value="DAILY" {% if st=='DAILY' %}selected{% endif %}>DAILY</option>
@@ -35,48 +35,48 @@
       </select>
     </div>
     <div class="col-md-3">
-      <label class="form-label">Hora (HH:MM)</label>
+      <label class="form-label">{{ _('Hora (HH:MM)') }}</label>
       <input class="form-control" name="time_hhmm" value="{{task.time_hhmm if task and task.time_hhmm else '08:00'}}">
     </div>
     <div class="col-md-3">
-      <label class="form-label">Weekdays (1..7)</label>
+      <label class="form-label">{{ _('Weekdays (1..7)') }}</label>
       <input class="form-control" name="weekdays" value="{{task.weekdays if task and task.weekdays else '1,2,3,4,5'}}">
-      <div class="form-text">Lun=1 ... Dom=7</div>
+      <div class="form-text">{{ _('Lun=1 ... Dom=7') }}</div>
     </div>
     <div class="col-md-3">
-      <label class="form-label">Interval (min)</label>
+      <label class="form-label">{{ _('Interval (min)') }}</label>
       <input class="form-control" name="interval_minutes" value="{{task.interval_minutes if task and task.interval_minutes else ''}}">
     </div>
 
     <hr class="mt-4">
 
-    <h5>Captura</h5>
+    <h5>{{ _('Captura') }}</h5>
     <div class="col-12">
-      <label class="form-label">URL</label>
+      <label class="form-label">{{ _('URL') }}</label>
       <input class="form-control" name="url" value="{{task.url if task else ''}}" required>
     </div>
 
     <div class="col-md-3">
-      <label class="form-label">Viewport width</label>
+      <label class="form-label">{{ _('Viewport width') }}</label>
       <input class="form-control" name="viewport_width" value="{{task.viewport_width if task else 1920}}">
     </div>
     <div class="col-md-3">
-      <label class="form-label">Viewport height</label>
+      <label class="form-label">{{ _('Viewport height') }}</label>
       <input class="form-control" name="viewport_height" value="{{task.viewport_height if task else 5000}}">
     </div>
     <div class="col-md-3">
-      <label class="form-label">CSS zoom</label>
+      <label class="form-label">{{ _('CSS zoom') }}</label>
       <input class="form-control" name="css_zoom" value="{{task.css_zoom if task else 1.0}}">
     </div>
     <div class="col-md-3 d-flex align-items-end">
       <div class="form-check">
         <input class="form-check-input" type="checkbox" name="full_page" {% if task and task.full_page %}checked{% endif %}>
-        <label class="form-check-label">Full page (v1: viewport grande)</label>
+        <label class="form-check-label">{{ _('Full page (v1: viewport grande)') }}</label>
       </div>
     </div>
 
     <div class="col-md-3">
-      <label class="form-label">Wait mode</label>
+      <label class="form-label">{{ _('Wait mode') }}</label>
       {% set wm = (task.wait_mode if task else 'SLEEP') %}
       <select class="form-select" name="wait_mode">
         <option value="SLEEP" {% if wm=='SLEEP' %}selected{% endif %}>SLEEP</option>
@@ -84,79 +84,79 @@
       </select>
     </div>
     <div class="col-md-3">
-      <label class="form-label">Wait seconds</label>
+      <label class="form-label">{{ _('Wait seconds') }}</label>
       <input class="form-control" name="wait_seconds" value="{{task.wait_seconds if task else 5}}">
     </div>
     <div class="col-md-6">
-      <label class="form-label">Wait selector (si SELECTOR)</label>
+      <label class="form-label">{{ _('Wait selector (si SELECTOR)') }}</label>
       <input class="form-control" name="wait_selector" value="{{task.wait_selector if task and task.wait_selector else ''}}">
     </div>
 
     <div class="col-md-6">
-      <label class="form-label">Remove selectors (JSON)</label>
+      <label class="form-label">{{ _('Remove selectors (JSON)') }}</label>
       <input class="form-control" name="remove_selectors" value="{{task.remove_selectors if task else '[]'}}">
       <div class="form-text">
-        Admite cadenas o objetos con accion <code>remove</code>, <code>hide</code> o <code>click</code>.
+        {{ _('Admite cadenas o objetos con accion <code>remove</code>, <code>hide</code> o <code>click</code>.') }}
         Ej: <code>["#WolfTelegram", {"selector":".cookie","action":"hide"}, {"selector":"button.close","action":"click"}]</code>
         <div class="mt-2" id="popup-presets">
-          <div><strong>Plantillas rapidas de popups comunes:</strong></div>
+          <div><strong>{{ _('Plantillas rapidas de popups comunes:') }}</strong></div>
           <div class="form-check">
             <input class="form-check-input preset-remove-selector" type="checkbox" id="preset-cookies" data-items='[{"selector":".cookie","action":"hide"},{"selector":".cookies","action":"hide"},{"selector":".cookie-banner","action":"hide"},{"selector":".cookies-banner","action":"hide"},{"selector":"#cookie-banner","action":"hide"},{"selector":"#cookie-consent","action":"hide"}]'>
-            <label class="form-check-label" for="preset-cookies">Cookies basicas (ocultar banners comunes)</label>
+            <label class="form-check-label" for="preset-cookies">{{ _('Cookies basicas (ocultar banners comunes)') }}</label>
           </div>
           <div class="form-check">
             <input class="form-check-input preset-remove-selector" type="checkbox" id="preset-onetrust" data-items='[{"selector":"#onetrust-accept-btn-handler","action":"click"},{"selector":".ot-sdk-container","action":"hide"}]'>
-            <label class="form-check-label" for="preset-onetrust">Cookies OneTrust (click en aceptar)</label>
+            <label class="form-check-label" for="preset-onetrust">{{ _('Cookies OneTrust (click en aceptar)') }}</label>
           </div>
           <div class="form-check">
             <input class="form-check-input preset-remove-selector" type="checkbox" id="preset-newsletter" data-items='[{"selector":".newsletter-modal","action":"hide"},{"selector":".modal-backdrop","action":"remove"},{"selector":".modal.show","action":"hide"}]'>
-            <label class="form-check-label" for="preset-newsletter">Modal de newsletter/registro</label>
+            <label class="form-check-label" for="preset-newsletter">{{ _('Modal de newsletter/registro') }}</label>
           </div>
           <div class="form-check">
             <input class="form-check-input preset-remove-selector" type="checkbox" id="preset-gdpr" data-items='[{"selector":"#didomi-notice","action":"hide"},{"selector":"#didomi-notice-agree-button","action":"click"},{"selector":".qc-cmp2-container","action":"hide"},{"selector":".qc-cmp2-summary-buttons .css-47sehv","action":"click"}]'>
-            <label class="form-check-label" for="preset-gdpr">Consentimiento GDPR / CMP</label>
+            <label class="form-check-label" for="preset-gdpr">{{ _('Consentimiento GDPR / CMP') }}</label>
           </div>
-          <button type="button" class="btn btn-sm btn-outline-secondary mt-2" id="apply-popup-presets">Añadir seleccionados</button>
-          <div class="form-text">Se agregan sin duplicados al JSON actual.</div>
+          <button type="button" class="btn btn-sm btn-outline-secondary mt-2" id="apply-popup-presets">{{ _('Añadir seleccionados') }}</button>
+          <div class="form-text">{{ _('Se agregan sin duplicados al JSON actual.') }}</div>
           <div class="mt-3">
-            <label class="form-label">Pegar HTML de un popup</label>
+            <label class="form-label">{{ _('Pegar HTML de un popup') }}</label>
             <textarea class="form-control" id="popup-snippet" rows="3" placeholder="&lt;div id=&quot;cookie-popup&quot; class=&quot;modal&quot;&gt;...&lt;/div&gt;"></textarea>
-            <div class="form-text">Detectamos el primer id o clase del elemento para crear un selector CSS automaticamente.</div>
-            <button type="button" class="btn btn-sm btn-outline-secondary mt-2" id="add-popup-snippet">Detectar y añadir</button>
+            <div class="form-text">{{ _('Detectamos el primer id o clase del elemento para crear un selector CSS automaticamente.') }}</div>
+            <button type="button" class="btn btn-sm btn-outline-secondary mt-2" id="add-popup-snippet">{{ _('Detectar y añadir') }}</button>
             <div class="form-text" id="popup-snippet-result"></div>
           </div>
         </div>
       </div>
     </div>
     <div class="col-md-6">
-      <label class="form-label">pre_js (opcional)</label>
+      <label class="form-label">{{ _('pre_js (opcional)') }}</label>
       <input class="form-control" name="pre_js" value="{{task.pre_js if task and task.pre_js else ''}}">
     </div>
 
  <details class="mt-3">
-  <summary><strong>Como funciona la espera antes de la captura</strong></summary>
+ <summary><strong>{{ _('Como funciona la espera antes de la captura') }}</strong></summary>
   <div class="mt-2">
     <ul>
       <li>
-        <b>Wait mode</b>
+        <b>{{ _('Wait mode') }}</b>
         <ul>
-          <li><b>SLEEP</b>: espera un numero fijo de segundos y captura.</li>
-          <li><b>SELECTOR</b>: espera a que aparezca un elemento concreto (CSS).</li>
+          <li><b>{{ _('SLEEP') }}</b>: {{ _('SLEEP: espera un numero fijo de segundos y captura.') }}</li>
+          <li><b>{{ _('SELECTOR') }}</b>: {{ _('SELECTOR: espera a que aparezca un elemento concreto (CSS).') }}</li>
         </ul>
       </li>
       <li>
-        <b>Wait seconds</b>
+        <b>{{ _('Wait seconds') }}</b>
         <ul>
-          <li>En <b>SLEEP</b>: segundos antes de capturar.</li>
-          <li>En <b>SELECTOR</b>: tiempo maximo de espera.</li>
+          <li>{{ _('En SLEEP: segundos antes de capturar.') }}</li>
+          <li>{{ _('En SELECTOR: tiempo maximo de espera.') }}</li>
         </ul>
       </li>
       <li>
-        <b>Wait selector</b>: selector CSS que indica que la pagina esta lista.
+        <b>{{ _('Wait selector') }}</b>: {{ _('Wait selector: selector CSS que indica que la pagina esta lista.') }}
         <br>
-        Solo se usa si <b>Wait mode = SELECTOR</b>.
+        {{ _('Solo se usa si Wait mode = SELECTOR.') }}
         <br>
-        Ejemplos:
+        {{ _('Ejemplos:') }}
         <code>#content</code>,
         <code>.main</code>,
         <code>body.loaded</code>
@@ -269,6 +269,10 @@
       });
     }
 
+    const msgNoSelector = "{{ _('No se encontro ningun id o clase en el HTML pegado.') }}";
+    const msgAdded = "{{ _('Añadido selector {selector}') }}";
+    const msgExisting = "{{ _('El selector {selector} ya estaba en la lista.') }}";
+
     if (snippetBtn && snippetInput) {
       snippetBtn.addEventListener('click', () => {
         if (snippetResult) snippetResult.textContent = '';
@@ -276,7 +280,7 @@
 
         if (!selector) {
           if (snippetResult) {
-            snippetResult.textContent = 'No se encontro ningun id o clase en el HTML pegado.';
+            snippetResult.textContent = msgNoSelector;
           }
           return;
         }
@@ -284,8 +288,8 @@
         const result = addEntries([{ selector, action: 'remove' }]);
         if (snippetResult) {
           snippetResult.textContent = result.added
-            ? `Añadido selector ${selector}`
-            : `El selector ${selector} ya estaba en la lista.`;
+            ? msgAdded.replace('{selector}', selector)
+            : msgExisting.replace('{selector}', selector);
         }
       });
     }
@@ -295,9 +299,9 @@
 
     <hr class="mt-4">
 
-    <h5>Email</h5>
+    <h5>{{ _('Email') }}</h5>
     <div class="col-md-6">
-      <label class="form-label">SMTP perfil</label>
+      <label class="form-label">{{ _('SMTP perfil') }}</label>
       <select class="form-select" name="smtp_profile_id" required>
         {% for p in profiles %}
           <option value="{{p.id}}" {% if task and task.smtp_profile_id==p.id %}selected{% endif %}>{{p.name}}</option>
@@ -306,40 +310,40 @@
     </div>
 
     <div class="col-md-6">
-      <label class="form-label">To (csv)</label>
+      <label class="form-label">{{ _('To (csv)') }}</label>
       <input class="form-control" name="to_emails" value="{{task.to_emails if task else ''}}" required>
     </div>
     <div class="col-md-6">
-      <label class="form-label">Cc (csv)</label>
+      <label class="form-label">{{ _('Cc (csv)') }}</label>
       <input class="form-control" name="cc_emails" value="{{task.cc_emails if task and task.cc_emails else ''}}">
     </div>
     <div class="col-md-6">
-      <label class="form-label">Bcc (csv)</label>
+      <label class="form-label">{{ _('Bcc (csv)') }}</label>
       <input class="form-control" name="bcc_emails" value="{{task.bcc_emails if task and task.bcc_emails else ''}}">
     </div>
 
     <div class="col-12">
-      <label class="form-label">Subject template</label>
+      <label class="form-label">{{ _('Subject template') }}</label>
       <input class="form-control" name="subject_template" value="{{task.subject_template if task else 'Captura {task_name} {date} {time}'}}">
     </div>
 
     <div class="col-12">
-      <label class="form-label">HTML template</label>
+      <label class="form-label">{{ _('HTML template') }}</label>
       <textarea class="form-control" name="html_template" rows="6">{{task.html_template if task else ''}}</textarea>
-      <div class="form-text">Para inline usa: &lt;img src="cid:screenshot"&gt;</div>
+      <div class="form-text">{{ _('Para inline usa: <img src="cid:screenshot">') | safe }}</div>
     </div>
 
     <div class="col-12">
-      <label class="form-label">Text template (opcional)</label>
+      <label class="form-label">{{ _('Text template (opcional)') }}</label>
       <textarea class="form-control" name="text_template" rows="2">{{task.text_template if task and task.text_template else ''}}</textarea>
     </div>
 
     <div class="col-md-3">
-  <label class="form-label">Retention days</label>
+  <label class="form-label">{{ _('Retention days') }}</label>
   <input class="form-control" name="retention_days"
          value="{{task.retention_days if task else 14}}">
   <div class="form-text">
-    Nº de dias que se conservaran las capturas.
+    {{ _('Nº de dias que se conservaran las capturas.') }}
   </div>
 </div>
 
@@ -347,9 +351,9 @@
   <div class="form-check">
     <input class="form-check-input" type="checkbox" name="attach_inline"
            {% if not task or task.attach_inline %}checked{% endif %}>
-    <label class="form-check-label">Inline CID</label>
+    <label class="form-check-label">{{ _('Inline CID') }}</label>
     <div class="form-text">
-      Inserta la imagen en el cuerpo del correo.
+      {{ _('Inserta la imagen en el cuerpo del correo.') }}
     </div>
   </div>
 </div>
@@ -358,9 +362,9 @@
   <div class="form-check">
     <input class="form-check-input" type="checkbox" name="attach_file"
            {% if task and task.attach_file %}checked{% endif %}>
-    <label class="form-check-label">Adjuntar tambien</label>
+    <label class="form-check-label">{{ _('Adjuntar tambien') }}</label>
     <div class="form-text">
-      Adjunta la imagen como archivo.
+      {{ _('Adjunta la imagen como archivo.') }}
     </div>
   </div>
 </div>
@@ -369,13 +373,13 @@
   </div>
 
   <div class="mt-3 d-flex gap-2 flex-wrap align-items-center">
-    <button class="btn btn-primary" type="submit">Guardar</button>
-    <a class="btn btn-secondary" href="/">Volver</a>
+    <button class="btn btn-primary" type="submit">{{ _('Guardar') }}</button>
+    <a class="btn btn-secondary" href="/">{{ _('Volver') }}</a>
   </div>
 </form>
 {% if task %}
-  <form class="mt-2" method="post" action="{{ url_for('task_delete', task_id=task.id) }}" onsubmit="return confirm('¿Seguro que quieres eliminar la tarea?');">
-    <button class="btn btn-danger" type="submit">Eliminar</button>
+  <form class="mt-2" method="post" action="{{ url_for('task_delete', task_id=task.id) }}" onsubmit="return confirm('{{ _('¿Seguro que quieres eliminar la tarea?') }}');">
+    <button class="btn btn-danger" type="submit">{{ _('Eliminar') }}</button>
   </form>
 {% endif %}
 {% endblock %}

@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
-<h3>{{ "Nuevo SMTP" if not p else "Editar SMTP" }}</h3>
+<h3>{{ _('Nuevo SMTP') if not p else _('Editar SMTP') }}</h3>
 
 <form method="post">
   <div class="row g-3">
     <div class="col-md-6">
-      <label class="form-label">Nombre</label>
+      <label class="form-label">{{ _('Nombre') }}</label>
       <input class="form-control" name="name" value="{{p.name if p else ''}}" required>
     </div>
     <div class="col-md-6">
-      <label class="form-label">Host</label>
+      <label class="form-label">{{ _('Host') }}</label>
       <input class="form-control" name="host" value="{{p.host if p else 'smtp.gmail.com'}}" required>
     </div>
 
     <div class="col-md-2">
-      <label class="form-label">Port</label>
+      <label class="form-label">{{ _('Port') }}</label>
       <input class="form-control" name="port" value="{{p.port if p else 587}}" required>
     </div>
     <div class="col-md-4">
@@ -27,87 +27,87 @@
       </select>
     </div>
     <div class="col-md-6">
-      <label class="form-label">Username</label>
+      <label class="form-label">{{ _('Username') }}</label>
       <input class="form-control" name="username" value="{{p.username if p else ''}}" required>
     </div>
 
     <div class="col-md-6">
-      <label class="form-label">Password env (nombre variable)</label>
+      <label class="form-label">{{ _('Password env (nombre variable)') }}</label>
       <input class="form-control" name="password_env" value="{{p.password_env if p else 'SMTP_PASS_GMAIL'}}" required>
-      <div class="form-text">Ej: SMTP_PASS_GMAIL (definida en docker-compose)</div>
+      <div class="form-text">{{ _('Ej: SMTP_PASS_GMAIL (definida en docker-compose)') }}</div>
     </div>
 
     <div class="col-md-6">
-      <label class="form-label">From email</label>
+      <label class="form-label">{{ _('From email') }}</label>
       <input class="form-control" name="from_email" value="{{p.from_email if p else ''}}" required>
     </div>
     <div class="col-md-6">
-      <label class="form-label">Reply-To (opcional)</label>
+      <label class="form-label">{{ _('Reply-To (opcional)') }}</label>
       <input class="form-control" name="reply_to" value="{{p.reply_to if p else ''}}">
     </div>
   </div>
 
   <div class="mt-3 d-flex gap-2">
-    <button class="btn btn-primary" type="submit">Guardar</button>
-    <a class="btn btn-secondary" href="/smtp">Volver</a>
+    <button class="btn btn-primary" type="submit">{{ _('Guardar') }}</button>
+    <a class="btn btn-secondary" href="/smtp">{{ _('Volver') }}</a>
   </div>
 </form>
 
 {% if p %}
-  <form class="mt-2" method="post" action="/smtp/{{p.id}}/delete" onsubmit="return confirm('¿Seguro que quieres eliminar el perfil SMTP?');">
-    <button class="btn btn-danger" type="submit">Eliminar</button>
+  <form class="mt-2" method="post" action="/smtp/{{p.id}}/delete" onsubmit="return confirm('{{ _('¿Seguro que quieres eliminar el perfil SMTP?') }}');">
+    <button class="btn btn-danger" type="submit">{{ _('Eliminar') }}</button>
   </form>
 {% endif %}
 
 <details class="mt-3 border rounded p-2 bg-light">
-  <summary><strong>Ayuda: configuracion SMTP</strong></summary>
+<summary><strong>{{ _('Ayuda: configuracion SMTP') }}</strong></summary>
   <div class="mt-2">
     <ul>
       <li>
-        <b>Nombre</b>:
-        Identificador interno para este servidor SMTP (ej: Gmail personal, Servidor trabajo).
+        <b>{{ _('Nombre') }}</b>:
+        {{ _('Identificador interno para este servidor SMTP (ej: Gmail personal, Servidor trabajo).') }}
       </li>
 
       <li>
         <b>Host / Port / Encryption</b>:
-        Datos del servidor SMTP.
+        {{ _('Datos del servidor SMTP.') }}
         <ul>
-          <li>Opciones para usar con gmail: <code>smtp.gmail.com</code>, puerto <code>587</code>, <b>STARTTLS</b></li>
-          <li>SSL suele usar puerto <code>465</code></li>
+          <li>{{ _('Opciones para usar con gmail: <code>smtp.gmail.com</code>, puerto <code>587</code>, <b>STARTTLS</b>') }}</li>
+          <li>{{ _('SSL suele usar puerto <code>465</code>') }}</li>
         </ul>
       </li>
 
       <li>
         <b>Username</b>:
-        Usuario para autenticar en el servidor SMTP.
+        {{ _('Usuario para autenticar en el servidor SMTP.') }}
         <br>
         ejemplo@gmail.com.
       </li>
 
       <li>
-        <b>Password env</b>:
-        Nombre de la variable de entorno que contiene la contrasena SMTP.
+        <b>{{ _('Password env') }}</b>:
+        {{ _('Nombre de la variable de entorno que contiene la contrasena SMTP.') }}
         <br>
-        <b>No pongas la contrasena aqui</b>.
+        <b>{{ _('No pongas la contrasena aqui') }}</b>.
         <br>
-        Ejemplo: <code>SMTP_PASS_GMAIL</code>
+        {{ _('Ejemplo: <code>SMTP_PASS_GMAIL</code>') | safe }}
       </li>
 
       <li>
         <b>From email</b>:
-        Remitente del correo.
+        {{ _('Remitente del correo.') }}
         <br>
-        Debe coincidir con el <b>Username</b>.
+        {{ _('Debe coincidir con el <b>Username</b>.') | safe }}
       </li>
 
       <li>
         <b>Reply-To</b> (opcional):
-        Direccion a la que se respondera el correo si el destinatario pulsa “Responder”.
+        {{ _('Direccion a la que se respondera el correo si el destinatario pulsa “Responder”.') }}
       </li>
     </ul>
 
     <div class="text-muted mt-2">
-      Consejo: usa siempre contrasenas de aplicacion y variables de entorno para mayor seguridad.
+      {{ _('Consejo: usa siempre contrasenas de aplicacion y variables de entorno para mayor seguridad.') }}
     </div>
   </div>
 </details>
