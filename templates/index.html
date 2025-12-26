@@ -1,19 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <h3 class="mb-0">Tareas</h3>
-  <a class="btn btn-primary" href="/tasks/new">Nueva tarea</a>
+  <h3 class="mb-0">{{ _('Tareas') }}</h3>
+  <a class="btn btn-primary" href="/tasks/new">{{ _('Nueva tarea') }}</a>
 </div>
 
 <table class="table table-striped bg-white">
   <thead>
     <tr>
-      <th>Nombre</th>
-      <th>Estado</th>
-      <th>Schedule</th>
-      <th>URL</th>
-      <th>Ultimo</th>
-      <th>Acciones</th>
+      <th>{{ _('Nombre') }}</th>
+      <th>{{ _('Estado') }}</th>
+      <th>{{ _('Schedule') }}</th>
+      <th>{{ _('URL') }}</th>
+      <th>{{ _('Ultimo') }}</th>
+      <th>{{ _('Acciones') }}</th>
     </tr>
   </thead>
   <tbody>
@@ -35,17 +35,17 @@
         {% endif %}
       </td>
       <td class="d-flex gap-2">
-        <a class="btn btn-sm btn-outline-primary" href="/tasks/{{t.id}}/edit">Editar</a>
+        <a class="btn btn-sm btn-outline-primary" href="/tasks/{{t.id}}/edit">{{ _('Editar') }}</a>
         <form method="post" action="/tasks/{{t.id}}/toggle">
-          <button class="btn btn-sm btn-outline-secondary" type="submit">{{ "Pausar" if t.enabled else "Activar" }}</button>
+          <button class="btn btn-sm btn-outline-secondary" type="submit">{{ _('Pausar') if t.enabled else _('Activar') }}</button>
         </form>
         <form method="post" action="/tasks/{{t.id}}/capture">
-          <button class="btn btn-sm btn-outline-info" type="submit">Capturar</button>
+          <button class="btn btn-sm btn-outline-info" type="submit">{{ _('Capturar') }}</button>
         </form>
         <form method="post" action="/tasks/{{t.id}}/run">
-          <button class="btn btn-sm btn-outline-success" type="submit">Test</button>
+          <button class="btn btn-sm btn-outline-success" type="submit">{{ _('Test') }}</button>
         </form>
-        <a class="btn btn-sm btn-outline-dark" href="/runs?task_id={{t.id}}">Historial</a>
+        <a class="btn btn-sm btn-outline-dark" href="/runs?task_id={{t.id}}">{{ _('Historial') }}</a>
       </td>
     </tr>
   {% endfor %}

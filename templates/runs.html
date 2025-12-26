@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-<h3>Historial</h3>
+<h3>{{ _('Historial') }}</h3>
 
 <form class="row g-2 mb-3 align-items-end">
   <div class="col-auto">
     <select name="task_id" class="form-select">
-      <option value="">Todas</option>
+      <option value="">{{ _('Todas') }}</option>
       {% for t in tasks %}
         <option value="{{t.id}}" {% if task_id==t.id %}selected{% endif %}>{{t.name}}</option>
       {% endfor %}
@@ -13,44 +13,44 @@
   </div>
   <div class="col-auto">
     <select name="status" class="form-select">
-      <option value="">OK y ERROR</option>
-      <option value="OK" {% if status=='OK' %}selected{% endif %}>Solo OK</option>
-      <option value="ERROR" {% if status=='ERROR' %}selected{% endif %}>Solo ERROR</option>
+      <option value="">{{ _('OK y ERROR') }}</option>
+      <option value="OK" {% if status=='OK' %}selected{% endif %}>{{ _('Solo OK') }}</option>
+      <option value="ERROR" {% if status=='ERROR' %}selected{% endif %}>{{ _('Solo ERROR') }}</option>
     </select>
   </div>
   <div class="col-auto">
-    <label class="form-label">Desde</label>
+    <label class="form-label">{{ _('Desde') }}</label>
     <input type="date" name="from_date" value="{{from_date}}" class="form-control" />
   </div>
   <div class="col-auto">
-    <label class="form-label">Hasta</label>
+    <label class="form-label">{{ _('Hasta') }}</label>
     <input type="date" name="to_date" value="{{to_date}}" class="form-control" />
   </div>
   <div class="col-auto">
-    <button class="btn btn-primary" type="submit">Filtrar</button>
+    <button class="btn btn-primary" type="submit">{{ _('Filtrar') }}</button>
   </div>
 </form>
 
 <div class="mb-2 text-muted">
-  Mostrando {{shown}} de {{total_runs}} ejecuciones (max 200 mas recientes).
+  {{ _('Mostrando {shown} de {total} ejecuciones (max 200 mas recientes).').format(shown=shown, total=total_runs) }}
   {% if status %}
-    Filtro de estado: <strong>{{status}}</strong>.
+    {{ _('Filtro de estado: {status}.').format(status=status) }}
   {% endif %}
   {% if from_date or to_date %}
-    Rango: <strong>{{from_date or 'inicio'}}</strong> a <strong>{{to_date or 'ahora'}}</strong>.
+    {{ _('Rango: <strong>{start}</strong> a <strong>{end}</strong>.').format(start=from_date or _('inicio'), end=to_date or _('ahora')) | safe }}
   {% endif %}
 </div>
 
 <table class="table table-striped bg-white">
   <thead>
     <tr>
-      <th>Fecha</th>
-      <th>Tarea</th>
-      <th>Trigger</th>
+      <th>{{ _('Fecha') }}</th>
+      <th>{{ _('Tarea') }}</th>
+      <th>{{ _('Trigger') }}</th>
       <th>Status</th>
-      <th>Duracion</th>
-      <th>Captura</th>
-      <th>Error</th>
+      <th>{{ _('Duracion') }}</th>
+      <th>{{ _('Captura') }}</th>
+      <th>{{ _('Error') }}</th>
     </tr>
   </thead>
   <tbody>
@@ -66,7 +66,7 @@
       <td>
         {% if r.screenshot_path %}
           {% set fname = r.screenshot_path.split('/')[-1] %}
-          <a href="/captures/{{fname}}" target="_blank">ver</a>
+          <a href="/captures/{{fname}}" target="_blank">{{ _('ver') }}</a>
         {% else %}-{% endif %}
       </td>
       <td style="max-width:400px;">{{r.error_message}}</td>
