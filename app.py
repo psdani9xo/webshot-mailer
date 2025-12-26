@@ -97,12 +97,26 @@ def create_app():
     @app.get("/runs")
     def runs():
         task_id = request.args.get("task_id", type=int)
+        status = request.args.get("status", "").strip().upper()
+
         q = Run.query
         if task_id:
             q = q.filter_by(task_id=task_id)
+        if status in {"OK", "ERROR"}:
+            q = q.filter_by(status=status)
+
+        total = q.count()
         rows = q.order_by(Run.id.desc()).limit(200).all()
         tasks = Task.query.order_by(Task.name.asc()).all()
-        return render_template("runs.html", runs=rows, tasks=tasks, task_id=task_id)
+        return render_template(
+            "runs.html",
+            runs=rows,
+            tasks=tasks,
+            task_id=task_id,
+            status=status if status in {"OK", "ERROR"} else "",
+            total_runs=total,
+            shown=len(rows),
+        )
 
     @app.get("/tasks/new")
     def task_new():
