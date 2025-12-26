@@ -18,7 +18,7 @@
 
 **WebShot Mailer** es una aplicacion web autoalojada que permite:
 
-- Capturar paginas web con Selenium
+- Capturar paginas web
 - Programar envios diarios, semanales o por intervalo
 - Enviar las capturas por correo (Gmail u otros SMTP)
 - Eliminar popups (cookies, Telegram, banners, etc.)
@@ -71,7 +71,7 @@ http://localhost:1234
 
 ```env
 TZ=Europe/Madrid
-APP_SECRET=change-me
+APP_SECRET=change-me #Esto no hace falta que lo cambies
 SMTP_PASS_GMAIL=tu_app_password_de_16_caracteres
 ```
 
@@ -187,6 +187,7 @@ Tambien puedes pegar el HTML del popup (el `<div>` o contenedor principal) en el
 ```
 webshot-mailer/
 ├── app.py
+├── .env #ESTE ARCHIVO LO TIENES QUE CREAR MANUALMENTE (nano .env)
 ├── capture.py
 ├── mailer.py
 ├── scheduler.py
