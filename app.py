@@ -97,12 +97,42 @@ def create_app():
     @app.get("/runs")
     def runs():
         task_id = request.args.get("task_id", type=int)
+        status = request.args.get("status", "").strip().upper()
+        from_date = request.args.get("from_date", "").strip()
+        to_date = request.args.get("to_date", "").strip()
+
         q = Run.query
         if task_id:
             q = q.filter_by(task_id=task_id)
+        if status in {"OK", "ERROR"}:
+            q = q.filter_by(status=status)
+        if from_date:
+            try:
+                dt = datetime.strptime(from_date, "%Y-%m-%d")
+                q = q.filter(Run.started_at >= dt)
+            except ValueError:
+                from_date = ""
+        if to_date:
+            try:
+                dt = datetime.strptime(to_date, "%Y-%m-%d") + timedelta(days=1)
+                q = q.filter(Run.started_at < dt)
+            except ValueError:
+                to_date = ""
+
+        total = q.count()
         rows = q.order_by(Run.id.desc()).limit(200).all()
         tasks = Task.query.order_by(Task.name.asc()).all()
-        return render_template("runs.html", runs=rows, tasks=tasks, task_id=task_id)
+        return render_template(
+            "runs.html",
+            runs=rows,
+            tasks=tasks,
+            task_id=task_id,
+            status=status if status in {"OK", "ERROR"} else "",
+            from_date=from_date,
+            to_date=to_date,
+            total_runs=total,
+            shown=len(rows),
+        )
 
     @app.get("/tasks/new")
     def task_new():

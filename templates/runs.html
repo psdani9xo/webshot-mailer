@@ -2,7 +2,7 @@
 {% block content %}
 <h3>Historial</h3>
 
-<form class="row g-2 mb-3">
+<form class="row g-2 mb-3 align-items-end">
   <div class="col-auto">
     <select name="task_id" class="form-select">
       <option value="">Todas</option>
@@ -12,9 +12,34 @@
     </select>
   </div>
   <div class="col-auto">
+    <select name="status" class="form-select">
+      <option value="">OK y ERROR</option>
+      <option value="OK" {% if status=='OK' %}selected{% endif %}>Solo OK</option>
+      <option value="ERROR" {% if status=='ERROR' %}selected{% endif %}>Solo ERROR</option>
+    </select>
+  </div>
+  <div class="col-auto">
+    <label class="form-label">Desde</label>
+    <input type="date" name="from_date" value="{{from_date}}" class="form-control" />
+  </div>
+  <div class="col-auto">
+    <label class="form-label">Hasta</label>
+    <input type="date" name="to_date" value="{{to_date}}" class="form-control" />
+  </div>
+  <div class="col-auto">
     <button class="btn btn-primary" type="submit">Filtrar</button>
   </div>
 </form>
+
+<div class="mb-2 text-muted">
+  Mostrando {{shown}} de {{total_runs}} ejecuciones (max 200 mas recientes).
+  {% if status %}
+    Filtro de estado: <strong>{{status}}</strong>.
+  {% endif %}
+  {% if from_date or to_date %}
+    Rango: <strong>{{from_date or 'inicio'}}</strong> a <strong>{{to_date or 'ahora'}}</strong>.
+  {% endif %}
+</div>
 
 <table class="table table-striped bg-white">
   <thead>
